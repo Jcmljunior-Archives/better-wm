@@ -54,26 +54,16 @@ function _autoload()
         for dir in "${_dirs[@]}"; do
             declare -Ix _desktop_entries; _desktop_entries=$(find "${dir/USER/$USER}" -type f);
             declare -Ia _desktop_entries_map; mapfile -t _desktop_entries_map <<< "$_desktop_entries"
-            declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}' | sed -e "s| |\n|")
+            declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}') # | sed -e "s| |\n|"
 
             for item in "${_desktop_entries_map[@]}"; do
-                declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
-                # declare -- _check_str; _check_str=$(
-                #     _in_array "$item" "$_desktop_entries_not_allowed"
-                # )
-
                 if [ -f "$item" ]; then
-                    printf "%s \n" "OK!"
+                    declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
+
+                    if [ -f "$item" ]; then
+                        printf "%s \n" "$item"
+                    fi
                 fi
-
-
-                # printf "%s \n" "$_desktop_entry_exec"
-
-                # if [ -f "$item" ]; then
-                #     declare -Ix _PATH; _PATH=$(grep -w "Exec=*" "$item" <<< cat)
-                    
-                #     printf "%s \n" "${_PATH/Exec=/}"
-                # fi
             done
         done
 
@@ -84,6 +74,8 @@ function _autoload()
 function _main()
 {
     _autoload
+
+    _in_array "pipewire.desktop" "/etc/xdg/autostart/nm-applet.desktop /etc/xdg/autostart/pipewire.desktop"
 }
 
 _main
