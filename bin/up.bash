@@ -20,9 +20,9 @@ declare -x PROJECT_CONF; PROJECT_CONF=$(cat "${PROJECT_PATH}/config.conf")
 function _in_array()
 {
     declare -I _search; _search="$1"
-    declare -Ia _arrs; mapfile _arrs <<< "${@:2}"
+    declare -Ia _map; mapfile _map <<< "${@:2}"
     
-    for str in "${_arrs[@]}"; do
+    for str in "${_map[@]}"; do
         [[ "$str" == *"$_search"* ]] && printf "TRUE" && return 0
     done
 
@@ -46,19 +46,38 @@ function _autoload()
         "/home/USER/.config/autostart"
     )
 
-    for dir in "${_dirs[@]}"; do
-        declare -Ix _dir_ls; _dir_ls=$(find "${dir/USER/$USER}" -type f);
-        declare -Ia _items; mapfile -t _items <<< "$_dir_ls"
-        # declare -Ix _NOT_LOADABLE; _NOT_LOADABLE=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}' | sed -e "s| |\n|")
+    # VERIFICA A EXISTENCIA DO DIRETÓRIO SETADO MANUALMENTE. (REQUERIDO!)
+    # CRIA O DIRETÓRIO DE ENTRADAS NA PASTA PESSOAL DO USUÁRIO CASO NÃO EXISTA. (PREVINE ERRO DURANTE A LISTAGEM)
+    if [ -d "${_dirs[0]}" ]; then
+        [[ ! -d "${_dirs[1]/USER/$USER}" ]] && mkdir "${_dirs[1]/USER/$USER}"
 
-        for ((i = 0; i < ${#_items[@]}; i++)); do       
-            if [ -f "${_items[$i]}" ]; then
-                declare -Ix _PATH; _PATH=$(grep -w "Exec=*" "${_items[$i]}" <<< cat)
-                
-                printf "%s \n" "${_PATH/Exec=/}"
-            fi
+        for dir in "${_dirs[@]}"; do
+            declare -Ix _desktop_entries; _desktop_entries=$(find "${dir/USER/$USER}" -type f);
+            declare -Ia _desktop_entries_map; mapfile -t _desktop_entries_map <<< "$_desktop_entries"
+            declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}' | sed -e "s| |\n|")
+
+            for item in "${_desktop_entries_map[@]}"; do
+                declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
+                # declare -- _check_str; _check_str=$(
+                #     _in_array "$item" "$_desktop_entries_not_allowed"
+                # )
+
+                if [ -f "$item" ]; then
+                    printf "%s \n" "OK!"
+                fi
+
+
+                # printf "%s \n" "$_desktop_entry_exec"
+
+                # if [ -f "$item" ]; then
+                #     declare -Ix _PATH; _PATH=$(grep -w "Exec=*" "$item" <<< cat)
+                    
+                #     printf "%s \n" "${_PATH/Exec=/}"
+                # fi
+            done
         done
-    done
+
+    fi
 }
 
 # A FUNÇÃO MAIN INICIALIZA TODOS OS COMPONENTES.
