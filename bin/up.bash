@@ -31,10 +31,10 @@ function _in_array()
     declare -Ia _map; mapfile -t _map <<< "${@:2}"
     
     for str in "${_map[@]}"; do
-        [[ "$str" =~ .*"$_search".* ]] && echo "TRUE" && return 0
+        [[ "$str" =~ .*"$_search".* ]] && return 0
     done
     
-    echo "FALSE" && return 1
+    return 1
 }
 
 # A FUNÇÃO AUTOLOAD INICIALIZA TODAS AS ENTRADAS DE ÁREA DE TRABALHO. (XDG)
@@ -66,26 +66,12 @@ function _autoload()
 
             for item in "${_desktop_entries_map[@]}"; do
                 if [ -f "$item" ]; then
-                    # export local _check_str="$(_in_array \""$item"\" \""$_desktop_entries_not_allowed"\")"
                     declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
-                    # declare -Ifx _in_array; _in_array "$item" "$_desktop_entries_not_allowed">/dev/null || {
-                    #     true () {
-                    #         continue
-                    #     }
-                    # }
-                    # declare -Ifx true 1>/dev/null || {
-                    #     # declare -Ifx _check_str; _check_str=$(_in_array "$item" "$_desktop_entries_not_allowed")
-
-                    #     function _check_str() {
-                    #         echo $(_in_array "$item" "$_desktop_entries_not_allowed")
-                    #     }
-                    # };
-
-                    # [[ "$(echo -n \""$_check_str"\")" == "TRUE" ]] && continue;
-
-                    if [ -f "$item" ]; then
-                        printf "%s \n" "$item"
-                    fi
+                    declare -Ifx _in_array; _in_array "$item" "$_desktop_entries_not_allowed">/dev/null || {
+                        if [ -f "$item" ]; then
+                            printf "%s \n" "$item"
+                        fi
+                    }
                 fi
             done
         done
