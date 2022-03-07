@@ -8,12 +8,20 @@
 set -euo pipefail
 
 # CONFIGURAÇÕES DE PROJETO.
+export readonly PROJECT_MODE="developer"
 export readonly PROJECT_PATH='/home/USER/.config'
 export readonly PROJECT_DIR='better-wm'
 export readonly PROJECT_PATH="${PROJECT_PATH/USER/$USER}/$PROJECT_DIR"
 
 # CONFIGURAÇÕES DE FUNCIONALIDADES.
 declare -x PROJECT_CONF; PROJECT_CONF=$(cat "${PROJECT_PATH}/config.conf")
+
+# A FUNÇÃO GET_PATH RETORNA O CAMINHO ABSOLUTO DO PROJETO DE DENVOLVIMENTO OU PRODUÇÃO.
+function _get_path()
+{
+    declare -I _path; _path="${PROJECT_PATH/USER/$USER}"
+    [[ "$PROJECT_MODE" == "developer" ]] && echo "${_path/.config/Git}" || echo "$_path"
+}
 
 # A FUNÇÃO IN_ARRAY PROCURA POR UM VALOR ESPECIFICO EM UM ARRAY.
 # DEMO: _in_array "O QUE PROCURA?" "AONDE PROCURAR?"
@@ -43,13 +51,13 @@ function _autoload()
 {
     declare -Ia _dirs; _dirs=(
         "/etc/xdg/autostart"
-        "/home/USER/.config/autostart"
+        "${PROJECT_PATH/$PROJECT_DIR}autostart"
     )
 
     # VERIFICA A EXISTENCIA DO DIRETÓRIO SETADO MANUALMENTE. (REQUERIDO!)
     # CRIA O DIRETÓRIO DE ENTRADAS NA PASTA PESSOAL DO USUÁRIO CASO NÃO EXISTA. (PREVINE ERRO DURANTE A LISTAGEM)
     if [ -d "${_dirs[0]}" ]; then
-        [[ ! -d "${_dirs[1]/USER/$USER}" ]] && mkdir "${_dirs[1]/USER/$USER}"
+        [[ ! -d "${_dirs[1]}" ]] && mkdir "${_dirs[1]}"
 
         for dir in "${_dirs[@]}"; do
             declare -Ix _desktop_entries; _desktop_entries=$(find "${dir/USER/$USER}" -type f);
@@ -58,10 +66,24 @@ function _autoload()
 
             for item in "${_desktop_entries_map[@]}"; do
                 if [ -f "$item" ]; then
-                    export local _check_str=$(_in_array "$item" "$_desktop_entries_not_allowed")            
+                    # export local _check_str="$(_in_array \""$item"\" \""$_desktop_entries_not_allowed"\")"
                     declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
+                    # declare -Ifx _in_array; _in_array "$item" "$_desktop_entries_not_allowed">/dev/null || {
+                    #     true () {
+                    #         continue
+                    #     }
+                    # }
+                    # declare -Ifx true 1>/dev/null || {
+                    #     # declare -Ifx _check_str; _check_str=$(_in_array "$item" "$_desktop_entries_not_allowed")
 
-                    if [ -f "$item" ] && [ "$_check_str" == "FALSE" ]; then
+                    #     function _check_str() {
+                    #         echo $(_in_array "$item" "$_desktop_entries_not_allowed")
+                    #     }
+                    # };
+
+                    # [[ "$(echo -n \""$_check_str"\")" == "TRUE" ]] && continue;
+
+                    if [ -f "$item" ]; then
                         printf "%s \n" "$item"
                     fi
                 fi
@@ -77,8 +99,6 @@ function _autoload()
 function _main()
 {
     _autoload
-
-    # _in_array "pipewire" "/etc/xdg/autostart/pipewire.desktop"
 }
 
 _main
