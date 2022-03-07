@@ -68,9 +68,7 @@ function _autoload()
                 if [ -f "$item" ]; then
                     declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
                     declare -Ifx _in_array; _in_array "$item" "$_desktop_entries_not_allowed">/dev/null || {
-                        if [ -f "$item" ]; then
-                            printf "%s \n" "$item"
-                        fi
+                        printf "%s \n" "$item"
                     }
                 fi
             done
@@ -84,7 +82,8 @@ function _autoload()
 # A FUNÇÃO MAIN INICIALIZA TODOS OS COMPONENTES.
 function _main()
 {
-    _autoload
+    declare -Ix _use_autoload; _use_autoload=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_ENABLED=*" | awk -F '=' '/=/ {print $2}')
+    [[ "$_use_autoload" == "TRUE" ]] && _autoload;
 }
 
 _main
