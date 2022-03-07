@@ -20,13 +20,13 @@ declare -x PROJECT_CONF; PROJECT_CONF=$(cat "${PROJECT_PATH}/config.conf")
 function _in_array()
 {
     declare -I _search; _search="$1"
-    declare -Ia _map; mapfile _map <<< "${@:2}"
+    declare -Ia _map; mapfile -t _map <<< "${@:2}"
     
     for str in "${_map[@]}"; do
-        [[ "$str" == *"$_search"* ]] && printf "TRUE" && return 0
+        [[ "$str" =~ .*"$_search".* ]] && echo "TRUE" && return 0
     done
-
-    printf "FALSE" && return 1
+    
+    echo "FALSE" && return 1
 }
 
 # A FUNÇÃO AUTOLOAD INICIALIZA TODAS AS ENTRADAS DE ÁREA DE TRABALHO. (XDG)
@@ -54,13 +54,14 @@ function _autoload()
         for dir in "${_dirs[@]}"; do
             declare -Ix _desktop_entries; _desktop_entries=$(find "${dir/USER/$USER}" -type f);
             declare -Ia _desktop_entries_map; mapfile -t _desktop_entries_map <<< "$_desktop_entries"
-            declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}') # | sed -e "s| |\n|"
+            declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}' | sed -e "s| |\n|")
 
             for item in "${_desktop_entries_map[@]}"; do
                 if [ -f "$item" ]; then
+                    export local _check_str=$(_in_array "$item" "$_desktop_entries_not_allowed")            
                     declare -Ix _desktop_entry_exec; _desktop_entry_exec=$(grep -w "Exec=*" "$item" <<< cat); _desktop_entry_exec="${_desktop_entry_exec/Exec=}"
 
-                    if [ -f "$item" ]; then
+                    if [ -f "$item" ] && [ "$_check_str" == "FALSE" ]; then
                         printf "%s \n" "$item"
                     fi
                 fi
@@ -68,6 +69,8 @@ function _autoload()
         done
 
     fi
+
+    exit 0
 }
 
 # A FUNÇÃO MAIN INICIALIZA TODOS OS COMPONENTES.
@@ -75,11 +78,11 @@ function _main()
 {
     _autoload
 
-    _in_array "pipewire.desktop" "/etc/xdg/autostart/nm-applet.desktop /etc/xdg/autostart/pipewire.desktop"
+    # _in_array "pipewire" "/etc/xdg/autostart/pipewire.desktop"
 }
 
 _main
 
-echo "Done!"
+printf "Done! \n"
 
 exit 0
