@@ -60,7 +60,7 @@ function _autoload()
         [[ ! -d "${_dirs[1]}" ]] && mkdir "${_dirs[1]}"
 
         for dir in "${_dirs[@]}"; do
-            declare -Ix _desktop_entries; _desktop_entries=$(find "${dir/USER/$USER}" -type f);
+            declare -Ix _desktop_entries; _desktop_entries=$(find "$dir" -type f);
             declare -Ia _desktop_entries_map; mapfile -t _desktop_entries_map <<< "$_desktop_entries"
             declare -Ix _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$PROJECT_CONF" | grep -e "AUTOSTART_*" | grep -e "_BLOCKED=*" | awk -F '=' '/=/ {print $2}' | sed -e "s| |\n|")
 
