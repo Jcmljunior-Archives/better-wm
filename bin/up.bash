@@ -5,6 +5,20 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
+function cleanup
+{
+    declare -- _status_code; _status_code="$?"
+    # declare -a _unset_map; _unset_map=(
+    #     "_PROJECT_CONF"
+    # )
+
+    # for str in "${_unset_map[@]}"; do
+    #     unset -n "$str"
+    # done
+
+    exit "$_status_code"
+}
+
 # A FUNÇÃO "_get_path" RETORNA O CAMINHO ABSOLUTO DO PROJETO DE ACORDO COM AS CONFIGURAÇÕES
 # DA VARIAVEL "_PROJECT_MODE".
 function _get_path() {
@@ -70,4 +84,4 @@ _main
 
 printf "Done! \n"
 
-exit 0
+trap cleanup exit 0
