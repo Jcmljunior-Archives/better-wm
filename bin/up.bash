@@ -81,10 +81,7 @@ function _keyboard()
     [[ -n "$_layout" ]] && _output+="-model -layout $_layout "
     [[ -n "$_variant" ]] && _output+="-variant $_variant "
     [[ -n "$_features" ]] && _output+="$_features "
-
-    if [[ -x "$(command -v setxkbmap)" ]]; then
-        exec setxkbmap " $_output "
-    fi
+    [[ -x "$(command -v setxkbmap)" ]] && exec setxkbmap " $_output "
 }
 
 # A FUNÇÃO "_main" INICIALIZA TODOS OS COMPONENTES.
