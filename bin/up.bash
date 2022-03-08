@@ -10,7 +10,7 @@
 function _get_path() {
     [[ "$_PROJECT_MODE" == "developer" ]] && printf "%s/.config/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
     [[ "$_PROJECT_MODE" == "production" ]] && printf "%s/Git/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
-    printf "Failed operation! \n" && return 1
+    printf "Operation not permitted.\n" && return 1
 }
 
 # A FUNÇÃO "_in_array" PROCURA POR UM VALOR ESPECIFICO EM UM ARRAY.
@@ -22,10 +22,10 @@ function _in_array()
     declare -a _looking_map; _looking_map=("${@:2}")
 
     for str in "${_looking_map[@]}"; do
-        [[ "$str" =~ .*"$_looking_for".* ]] && echo "TRUE" && return 0
+        [[ "$str" =~ .*"$_looking_for".* ]] && printf "TRUE\n" && return 0
     done
 
-    echo "FALSE" && return 1
+    printf "FALSE\n" && return 1
 }
 
 function _autoload() {
@@ -44,8 +44,7 @@ function _autoload() {
             declare -- _desktop_entry_app; _desktop_entry_app=$(grep -E "Exec=" "$application" <<< cat); _desktop_entry_app="${_desktop_entry_app##*Exec=}"
             declare -f _check_str; _check_str=$(_in_array "$application" "$_desktop_entries_not_allowed")
 
-            [[ "$_check_str" == "TRUE" ]] && continue;
-            [[ ! -f "$application" ]] && continue;
+            [[ "$_check_str" == "TRUE" ]] || [[ ! -f "$application" ]] && continue;
             
             echo "$application - $_check_str"
         done
