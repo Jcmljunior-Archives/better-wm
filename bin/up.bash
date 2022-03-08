@@ -5,23 +5,28 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
-function cleanup
+# A FUNÇÃO "_cleanup" É RESPONSÁVEL POR ELIMINAR ARQUIVOS E CONFIGURAÇÕES TEMPORARIA.
+function _cleanup
 {
     declare -- _status_code; _status_code="$?"
-    # declare -a _unset_map; _unset_map=(
-    #     "_PROJECT_CONF"
-    # )
+    declare -a _unset_map; _unset_map=(
+        "_PROJECT_PATH"
+        "_PROJECT_DIR"
+        "_PROJECT_MODE"
+        "_PROJECT_CONF"
+    )
 
-    # for str in "${_unset_map[@]}"; do
-    #     unset -n "$str"
-    # done
+    for str in "${_unset_map[@]}"; do
+        unset -n "$str"
+    done
 
     exit "$_status_code"
 }
 
 # A FUNÇÃO "_get_path" RETORNA O CAMINHO ABSOLUTO DO PROJETO DE ACORDO COM AS CONFIGURAÇÕES
 # DA VARIAVEL "_PROJECT_MODE".
-function _get_path() {
+function _get_path()
+{
     [[ "$_PROJECT_MODE" == "developer" ]] && printf "%s/Git/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
     [[ "$_PROJECT_MODE" == "production" ]] && printf "%s/.config/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
     printf "Operation not permitted.\n" && return 1
@@ -42,7 +47,8 @@ function _in_array()
     printf "FALSE\n" && return 1
 }
 
-function _autoload() {
+function _autoload()
+{
     declare -I _PROJECT_PATH; _PROJECT_PATH="$_PROJECT_PATH/.config"
     declare -a _directories
 
@@ -65,7 +71,8 @@ function _autoload() {
     done
 }
 
-function _keyboard() {
+function _keyboard()
+{
     declare -- _layout; _layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT")
     declare -- _variant; _variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT")
     declare -- _features; _features=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_FEATURES")
@@ -97,4 +104,4 @@ _main
 
 printf "Done! \n"
 
-trap cleanup exit 0
+trap _cleanup exit 0
