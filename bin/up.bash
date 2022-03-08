@@ -65,11 +65,24 @@ function _autoload() {
     done
 }
 
+function _keyboard() {
+    declare -- _layout; _layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT")
+    declare -- _variant; _variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT")
+    declare -- _features; _features=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_FEATURES")
+
+    if [[ -x "$(command -v setxkbmap)" ]]; then
+        printf "Exists! \n"
+    fi
+}
+
 # A FUNÇÃO "_main" INICIALIZA TODOS OS COMPONENTES.
 function _main()
 {
     declare -- _use_autoload; _use_autoload=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_ENABLE"); _use_autoload="${_use_autoload##*=}"
     [[ "$_use_autoload" == "TRUE" ]] && _autoload
+
+    declare -- _use_keyboard; _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED"); _use_keyboard="${_use_keyboard##*=}"
+    [[ "$_use_keyboard" == "TRUE" ]] && _keyboard
 }
 
 # DEFINIÇÕES DE PROJETO.
