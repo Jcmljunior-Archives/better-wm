@@ -58,7 +58,7 @@ function _autoload()
     for directory in "${_directories[@]}"; do
         declare -x _desktop_entries; _desktop_entries=$(find "$directory" -type f)
         declare -a _desktop_entries_map; _desktop_entries_map=($_desktop_entries)
-        declare -- _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART"); _desktop_entries_not_allowed="${_desktop_entries_not_allowed##*=}"
+        declare -- _desktop_entries_not_allowed; _desktop_entries_not_allowed=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_BLOCKED"); _desktop_entries_not_allowed="${_desktop_entries_not_allowed##*=}"
 
         for application in "${_desktop_entries_map[@]}"; do
             declare -- _desktop_entry_app; _desktop_entry_app=$(grep -E "Exec=" "$application" <<< cat); _desktop_entry_app="${_desktop_entry_app##*Exec=}"
@@ -73,12 +73,14 @@ function _autoload()
 
 function _keyboard()
 {
-    declare -- _layout; _layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT")
-    declare -- _variant; _variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT")
-    declare -- _features; _features=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_FEATURES")
+    declare -- _layout; _layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT"); _layout="${_layout##*=}"
+    declare -- _variant; _variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT"); _variant="${_variant##*=}"
+    declare -- _features; _features=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_FEATURES"); _features="${_features##*=}"
 
     if [[ -x "$(command -v setxkbmap)" ]]; then
-        printf "Exists! \n"
+        printf "%s \n" "$_layout"
+        printf "%s \n" "$_variant"
+        printf "%s \n" "$_features"
     fi
 }
 
