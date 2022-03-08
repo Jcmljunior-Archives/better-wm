@@ -76,11 +76,14 @@ function _keyboard()
     declare -- _layout; _layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT"); _layout="${_layout##*=}"
     declare -- _variant; _variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT"); _variant="${_variant##*=}"
     declare -- _features; _features=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_FEATURES"); _features="${_features##*=}"
+    declare -- _output
+
+    [[ -n "$_layout" ]] && _output+="-model -layout $_layout "
+    [[ -n "$_variant" ]] && _output+="-variant $_variant "
+    [[ -n "$_features" ]] && _output+="$_features "
 
     if [[ -x "$(command -v setxkbmap)" ]]; then
-        printf "%s \n" "$_layout"
-        printf "%s \n" "$_variant"
-        printf "%s \n" "$_features"
+        exec setxkbmap " $_output "
     fi
 }
 
