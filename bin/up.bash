@@ -8,8 +8,8 @@
 # A FUNÇÃO "_get_path" RETORNA O CAMINHO ABSOLUTO DO PROJETO DE ACORDO COM AS CONFIGURAÇÕES
 # DA VARIAVEL "_PROJECT_MODE".
 function _get_path() {
-    [[ "$_PROJECT_MODE" == "developer" ]] && printf "%s/.config/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
-    [[ "$_PROJECT_MODE" == "production" ]] && printf "%s/Git/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
+    [[ "$_PROJECT_MODE" == "developer" ]] && printf "%s/Git/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
+    [[ "$_PROJECT_MODE" == "production" ]] && printf "%s/.config/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR" && return 0
     printf "Operation not permitted.\n" && return 1
 }
 
@@ -44,7 +44,7 @@ function _autoload() {
             declare -- _desktop_entry_app; _desktop_entry_app=$(grep -E "Exec=" "$application" <<< cat); _desktop_entry_app="${_desktop_entry_app##*Exec=}"
             declare -f _check_str; _check_str=$(_in_array "$application" "$_desktop_entries_not_allowed")
 
-            [[ "$_check_str" == "TRUE" ]] || [[ ! -f "$application" ]] && continue;
+            [[ "$_check_str" == "TRUE" ]] || [[ ! -f "$application" ]] && continue
             
             echo "$application - $_check_str"
         done
