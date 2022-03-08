@@ -81,7 +81,15 @@ function _keyboard()
     [[ -n "$_layout" ]] && _output+="-model -layout $_layout "
     [[ -n "$_variant" ]] && _output+="-variant $_variant "
     [[ -n "$_features" ]] && _output+="$_features "
+
     [[ -x "$(command -v setxkbmap)" ]] && exec setxkbmap " $_output "
+}
+
+function _touchpad()
+{
+    declare -- _tap; _tap=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_TAPTOCLICK"); _tap="${_tap##*=}"
+    
+    [[ "$_tap" == "TRUE" ]] && exec xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 1
 }
 
 # A FUNÇÃO "_main" INICIALIZA TODOS OS COMPONENTES.
@@ -92,6 +100,9 @@ function _main()
 
     declare -- _use_keyboard; _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED"); _use_keyboard="${_use_keyboard##*=}"
     [[ "$_use_keyboard" == "TRUE" ]] && _keyboard
+
+    declare -- _use_touchpad; _use_touchpad=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_ENABLED"); _use_touchpad="${_use_touchpad##*=}"
+    [[ "$_use_touchpad" == "TRUE" ]] && _touchpad
 }
 
 # DEFINIÇÕES DE PROJETO.
