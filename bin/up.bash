@@ -128,16 +128,26 @@ function _keyboard()
     }
     declare -- _output
 
-    [[ -n "$_layout" ]] && _output+="-model -layout $_layout "
-    [[ -n "$_variant" ]] && _output+="-variant $_variant "
-    [[ -n "$_features" ]] && _output+="$_features"
+    [[ -n "$_layout" ]] && {
+        _output+="-model -layout $_layout "
+    }
+    [[ -n "$_variant" ]] && {
+        _output+="-variant $_variant "
+    }
+    [[ -n "$_features" ]] && {
+        _output+="$_features"
+    }
 
-    [[ -x "$(command -v setxkbmap)" ]] && setxkbmap $_output &
+    [[ -x "$(command -v setxkbmap)" ]] && {
+        setxkbmap $_output &
+    }
 }
 
 function _touchpad()
 {
-    declare -- _tap; _tap=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_TAPTOCLICK"); _tap="${_tap##*=}"
+    declare -- _tap; _tap=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_TAPTOCLICK") && {
+        _tap="${_tap##*=}"
+    }
 
     [[ "$_tap" == "TRUE" ]] && [[ -x "$(command -v xinput)" ]] && {
         xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 1 &
@@ -148,7 +158,9 @@ function _window_manager()
 {
     declare -- _window_m; _window_m=$(echo -n "$_PROJECT_CONF" | grep -E "BETTERWM_SESSION"); _window_m="${_window_m##*=}"
 
-    [[ -x "$(command -v "$_window_m")" ]] && exec "$_window_m" && return 0 || return 1
+    [[ -x "$(command -v "$_window_m")" ]] && {
+        exec "$_window_m"
+    }
 }
 
 function _xcursor()
@@ -176,12 +188,21 @@ function _main()
 }
 
 # DEFINIÇÕES DE PROJETO.
-declare -- _PROJECT_MODE; _PROJECT_MODE="developer"
-declare -- _PROJECT_PATH; _PROJECT_PATH="/home/USER"; _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
-declare -- _PROJECT_DIR; _PROJECT_DIR="better-wm"
+declare -- _PROJECT_MODE && {
+    _PROJECT_MODE="developer"
+}
+declare -- _PROJECT_PATH && {
+    _PROJECT_PATH="/home/USER"
+    _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
+}
+declare -- _PROJECT_DIR && {
+    _PROJECT_DIR="better-wm"
+}
 
 # DEFINIÇÕES DE FUNCIONALIDADES.
-declare -- _PROJECT_CONF; _PROJECT_CONF=$(cat "$(_get_path)""/config.conf")
+declare -- _PROJECT_CONF && {
+    _PROJECT_CONF=$(cat "$(_get_path)""/config.conf")
+}
 
 _main
 
