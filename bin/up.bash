@@ -32,16 +32,16 @@ function _cleanup
 function _get_path()
 {
     [[ "$_PROJECT_MODE" == "developer" ]] && {
-        printf "%s/Git/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR"
+        echo "$_PROJECT_PATH/Git/$_PROJECT_DIR"
         return 0
     }
 
     [[ "$_PROJECT_MODE" == "production" ]] && {
-        printf "%s/.config/%s\n" "$_PROJECT_PATH" "$_PROJECT_DIR"
+        echo "$_PROJECT_PATH/.config/$_PROJECT_DIR"
         return 0
     }
     
-    printf "Operation not permitted.\n"
+    echo "Operation not permitted."
     return 1
 }
 
@@ -59,12 +59,12 @@ function _in_array()
 
     for str in "${_looking_map[@]}"; do
         [[ "$str" =~ .*"$_looking_for".* ]] && {
-            printf "TRUE\n"
+            echo "TRUE"
             return 0
         }
     done
 
-    printf "FALSE\n"
+    echo "FALSE"
     return 1
 }
 
@@ -218,6 +218,6 @@ declare -- _PROJECT_CONF && {
 
 _main
 
-printf "Done! \n"
+echo "Done!"
 
 trap _cleanup exit 0
