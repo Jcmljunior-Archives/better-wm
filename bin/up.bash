@@ -156,7 +156,10 @@ function _touchpad()
 
 function _window_manager()
 {
-    declare -- _window_m; _window_m=$(echo -n "$_PROJECT_CONF" | grep -E "BETTERWM_SESSION"); _window_m="${_window_m##*=}"
+    declare -- _window_m && {
+        _window_m=$(echo -n "$_PROJECT_CONF" | grep -E "BETTERWM_SESSION")
+        _window_m="${_window_m##*=}"
+    }
 
     [[ -x "$(command -v "$_window_m")" ]] && {
         exec "$_window_m"
@@ -173,13 +176,22 @@ function _xcursor()
 # A FUNÇÃO "_main" INICIALIZA TODOS OS COMPONENTES.
 function _main()
 {
-    declare -- _use_autoload; _use_autoload=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_ENABLE"); _use_autoload="${_use_autoload##*=}"
+    declare -- _use_autoload && {
+        _use_autoload=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_ENABLE")
+        _use_autoload="${_use_autoload##*=}"
+    }
     [[ "$_use_autoload" == "TRUE" ]] && _autoload
 
-    declare -- _use_keyboard; _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED"); _use_keyboard="${_use_keyboard##*=}"
+    declare -- _use_keyboard && {
+        _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED")
+        _use_keyboard="${_use_keyboard##*=}"
+    }
     [[ "$_use_keyboard" == "TRUE" ]] && _keyboard
 
-    declare -- _use_touchpad; _use_touchpad=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_ENABLED"); _use_touchpad="${_use_touchpad##*=}"
+    declare -- _use_touchpad && {
+        _use_touchpad=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_ENABLED")
+        _use_touchpad="${_use_touchpad##*=}"
+    }
     [[ "$_use_touchpad" == "TRUE" ]] && _touchpad
 
     _xcursor
