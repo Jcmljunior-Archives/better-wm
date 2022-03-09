@@ -139,7 +139,9 @@ function _touchpad()
 {
     declare -- _tap; _tap=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_TAPTOCLICK"); _tap="${_tap##*=}"
 
-    [[ "$_tap" == "TRUE" ]] && [[ -x "$(command -v xinput)" ]] && xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 1 &
+    [[ "$_tap" == "TRUE" ]] && [[ -x "$(command -v xinput)" ]] && {
+        xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 1 &
+    }
 }
 
 function _window_manager()
