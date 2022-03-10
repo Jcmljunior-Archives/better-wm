@@ -7,11 +7,14 @@
 
 function @wm
 {
-    echo "Usando: ${FUNCNAME[0]}"
+    [[ "$_PROJECT_DEBUG" == "TRUE" ]] && {
+        echo "Função: ${FUNCNAME[0]}"
+    }
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
-function @autoclean () {
+function @autoclean ()
+{
     declare -- _status_code && {
         _status_code="$?"
     }
@@ -23,6 +26,8 @@ function @autoclean () {
             "_PROJECT_DIR"
             "_PROJECT_PATH"
             "_PROJECT_CONF"
+            "_PROJECT_LANG"
+            "_PROJECT_I18N"
             "_FUNCTIONS_MAP"
         )
     }
@@ -83,7 +88,24 @@ declare -- _PROJECT_PATH && {
 
 # A DECLARAÇÃO "_PROJECT_CONF" DEFINE O COMPORTAMENTO DOS COMPONENTES.
 declare -- _PROJECT_CONF && {
-    _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
+    [[ -f "$_PROJECT_PATH/config.conf" ]] && {
+        _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
+    }
+}
+
+# A DECLARAÇÃO "_PROJECT_LANG" DEFINE O IDIOMA PARA A EXIBIÇÃO DE LOGS.
+declare -- _PROJECT_LANG && {
+    [[ -f "/etc/locale.conf" ]] && {
+        _PROJECT_LANG=$(cat "/etc/locale.conf")
+        _PROJECT_LANG="${_PROJECT_LANG##*=}"
+        _PROJECT_LANG=$(echo -n "$_PROJECT_LANG" | awk -F "." '/./ { print $1 }')
+    }
+}
+
+declare -- _PROJECT_I18N && {
+    [[ -f "$_PROJECT_PATH/language.conf" ]] && {
+        _PROJECT_I18N=$(cat "$_PROJECT_PATH/language.conf")
+    }
 }
 
 # A DECLARAÇÃO "_FUNCTIONS_MAP" DEFINE A ORDEM DE EXECUÇÃO DOS COMPONENTES
