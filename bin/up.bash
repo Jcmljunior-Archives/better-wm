@@ -7,10 +7,19 @@
 
 function @wm
 {
-    [[ "$_PROJECT_DEBUG" == "TRUE" ]] && {
-        echo "Função: ${FUNCNAME[0]}"
-    }
+    @debug "Função: ${FUNCNAME[0]}"
 }
+
+# A FUNÇÃO "@debug" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
+function @debug () {
+    [[ "$_PROJECT_DEBUG" == "TRUE" ]] || [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
+        echo "$1"
+        return 0
+    }
+
+    return 1
+}
+
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
 function @autoclean ()
@@ -62,7 +71,7 @@ declare -- _PROJECT_MODE && {
 
 # A DECLARAÇÃO "_PROJECT_DEBUG" DEFINE A DEPURAÇÃO DOS COMPONENTES.
 declare -- _PROJECT_DEBUG && {
-    _PROJECT_DEBUG="TRUE"
+    _PROJECT_DEBUG="FALSE"
 }
 
 # A DECLARAÇÃO "_PROJECT_DIR" DEFINE O DIRETÓRIO PADRÃO DO PROJETO.
