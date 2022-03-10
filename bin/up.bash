@@ -173,14 +173,44 @@ function _xcursor()
     }
 }
 
+function _feh()
+{
+    declare -- _path && {
+        _path=$(echo -n "$_PROJECT_CONF" | grep -E "FEH_BACKGROUND_PATH")
+        _path="${_path##*=}"
+    }
+    declare -- _features && {
+        _features=$(echo -n "$_PROJECT_CONF" | grep -E "FEH_BACKGROUND_FEATURES")
+        _features="${_features##*=}"
+    }
+    declare -- _background && {
+        [[ -n "$_path" ]] && _background=$(find "$_path" -type f)
+        [[ -z "$_path" ]] && _background=$(find "$(_get_path)""/background" -type f)
+    }
+    declare -- _background_map && {
+        mapfile -t _background_map <<< "$_background"
+    }
+
+    declare -x _rand && {
+        _rand="$((RANDOM % ${#_background_map[@]}))"
+    }
+
+    [[ -x "$(command -v feh)" ]] && {
+        exec feh "$_features ${_background_map[$_rand]}" &
+    }
+}
+
 # A FUNÇÃO "_main" INICIALIZA TODOS OS COMPONENTES.
 function _main()
 {
+
     declare -- _use_autoload && {
         _use_autoload=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_ENABLE")
         _use_autoload="${_use_autoload##*=}"
     }
     [[ "$_use_autoload" == "TRUE" ]] && _autoload
+
+    feh
 
     declare -- _use_keyboard && {
         _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED")
