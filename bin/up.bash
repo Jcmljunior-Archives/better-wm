@@ -19,12 +19,12 @@ function @wm
 # A FUNÇÃO "@debug" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
 function @debug ()
 {
-    declare -- _qtd && {
-        _qtd=$(expr length "${1}")
+    declare -- _length && {
+        _length="${#1}"
     }
 
     declare -- _stroke && {
-        for (( i=1; i<="$_qtd"; i++ )); do
+        for (( i=1; i<="$_length"; i++ )); do
             _stroke+="-"
         done
     }
