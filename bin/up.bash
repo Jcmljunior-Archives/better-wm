@@ -10,7 +10,6 @@ function @wm
     echo "Usando: ${FUNCNAME[0]}"
 }
 
-
 function @autoclean () {
     declare -- _status_code && {
         _status_code="$?"
@@ -26,9 +25,6 @@ function @main
         case $1 in
         "-wm" | "--window-manager")
             @wm; shift;;
-
-        "-h" | "--hello")
-            @hello; shift;;
 
         *)
             echo ""
