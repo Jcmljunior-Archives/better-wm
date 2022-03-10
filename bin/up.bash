@@ -210,7 +210,11 @@ function _main()
     }
     [[ "$_use_autoload" == "TRUE" ]] && _autoload
 
-    feh
+    declare -- _use_feh && {
+        _use_feh=$(echo -n "$_PROJECT_CONF" | grep -E "FEH_ENABLED")
+        _use_feh="${_use_feh##*=}"
+    }
+    [[ "$_use_feh" == "TRUE" ]] && feh
 
     declare -- _use_keyboard && {
         _use_keyboard=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED")
