@@ -7,19 +7,41 @@
 
 function @wm
 {
-    @debug "Função: ${FUNCNAME[0]}"
+    @debug "Iniciando função: ${FUNCNAME[0]}"
+    
+    echo "Hello World!"
+    echo "Hello World!"
+    echo "Hello World!"
+
+    @debug "Encerrando função: ${FUNCNAME[0]}" "TRUE"
 }
 
 # A FUNÇÃO "@debug" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
-function @debug () {
+function @debug ()
+{
+    declare -- _qtd && {
+        _qtd=$(expr length "${1}")
+    }
+
+    declare -- _stroke && {
+        for (( i=1; i<="$_qtd"; i++ )); do
+            _stroke+="-"
+        done
+    }
+
+    [[ -n "$2" ]] && {
+        printf "\n"
+    }
+
     [[ "$_PROJECT_DEBUG" == "TRUE" ]] || [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
-        echo "$1"
+        printf "%s \n" "$_stroke"
+        printf "%s \n" "$1"
+        printf "%s \n" "$_stroke"
         return 0
     }
 
     return 1
 }
-
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
 function @autoclean ()
@@ -36,7 +58,6 @@ function @autoclean ()
             "_PROJECT_PATH"
             "_PROJECT_CONF"
             "_PROJECT_LANG"
-            "_PROJECT_I18N"
             "_FUNCTIONS_MAP"
         )
     }
@@ -50,7 +71,7 @@ function @autoclean ()
 
 # A FUNÇÃO "@main" INICIA OS COMPONENTES DE FORMA SELETIVA.
 function @main
-{
+{    
     while [[ "$*" ]]; do
         case $1 in
         "-wm" | "--window-manager")
@@ -111,12 +132,6 @@ declare -- _PROJECT_LANG && {
     }
 }
 
-declare -- _PROJECT_I18N && {
-    [[ -f "$_PROJECT_PATH/language.conf" ]] && {
-        _PROJECT_I18N=$(cat "$_PROJECT_PATH/language.conf")
-    }
-}
-
 # A DECLARAÇÃO "_FUNCTIONS_MAP" DEFINE A ORDEM DE EXECUÇÃO DOS COMPONENTES
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
 declare -a _FUNCTIONS_MAP && {
@@ -135,5 +150,5 @@ declare -a _FUNCTIONS_MAP && {
 }
 
 # FINALIZA O SCRIPT.
-echo "Done!"
+@debug "Fim!" "TRUE"
 trap @autoclean exit 0
