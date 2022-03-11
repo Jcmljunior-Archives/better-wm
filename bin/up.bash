@@ -16,36 +16,36 @@ function @end_function()
 }
 
 # NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
-function @limbo
-{
-    @start_function "${FUNCNAME[0]}"
+# function @limbo
+# {
+#     @start_function "${FUNCNAME[0]}"
 
-    declare -A _config
-    declare -- _current
-    declare -a _array && {
-        IFS=$'\n' read -r -d '' -a _array <<< "$_PROJECT_CONF"
-        for str in "${_array[@]}"; do
-            str=""
+#     declare -A _config
+#     declare -- _current
+#     declare -a _array && {
+#         IFS=$'\n' read -r -d '' -a _array <<< "$_PROJECT_CONF"
+#         for str in "${_array[@]}"; do
+#             str=""
 
-            if [[ -z "${str##*]}" ]]; then
-                _current="${str:1:-1}"
-            elif [[ -n "${str##*]}" ]] ; then
-                _config[$_current]+="$(echo -n "$str ")" && {
-                    continue
-                }
-            else
-               @debug "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
-               return 1
-            fi
-        done
-    }
+#             if [[ -z "${str##*]}" ]]; then
+#                 _current="${str:1:-1}"
+#             elif [[ -n "${str##*]}" ]] ; then
+#                 _config[$_current]+="$(echo -n "$str ")" && {
+#                     continue
+#                 }
+#             else
+#                @debug "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
+#                return 1
+#             fi
+#         done
+#     }
 
-    for str in "${!_config[@]}"; do
-        echo "$str - ${_config[$str]}"
-    done
+#     for str in "${!_config[@]}"; do
+#         echo "$str - ${_config[$str]}"
+#     done
 
-    @end_function "${FUNCNAME[0]}" "TRUE"
-}
+#     @end_function "${FUNCNAME[0]}" "TRUE"
+# }
 
 function @wm
 {
@@ -119,8 +119,8 @@ function @main
         "-wm" | "--window-manager")
             @wm; shift;;
 
-        "--limbo")
-            @limbo; shift;;
+        # "--limbo")
+        #     @limbo; shift;;
 
         *)
             @debug "Oppss, a função chamada não existe." "TRUE"
