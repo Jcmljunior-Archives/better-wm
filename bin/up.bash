@@ -8,13 +8,13 @@
 # A FUNÇÃO "@start_function" APRESENTA A MENSAGEM DE LOG INICIAL DE TODAS AS FUNÇÕES.
 function @start_function()
 {
-    @debug "Iniciando função: $1" [[ -z "$2" ]] && "$2"
+    @logger "Iniciando função: $1" [[ -z "$2" ]] && "$2"
 }
 
 # A FUNÇÃO "@end_function" APRESENTA A MENSAGEM DE LOG FINAL DE TODAS AS FUNÇÕES.
 function @end_function()
 {
-    @debug "Encerrando função: $1" "$2"
+    @logger "Encerrando função: $1" "$2"
 }
 
 # NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
@@ -36,7 +36,7 @@ function @end_function()
 #                     continue
 #                 }
 #             else
-#                @debug "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
+#                @logger "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
 #                return 1
 #             fi
 #         done
@@ -60,8 +60,8 @@ function @wm
     @end_function "${FUNCNAME[0]}" "TRUE"
 }
 
-# A FUNÇÃO "@debug" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
-function @debug ()
+# A FUNÇÃO "@logger" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
+function @logger ()
 {
     declare -- _length && {
         _length="${#1}"
@@ -125,7 +125,7 @@ function @main
         #     @limbo; shift;;
 
         *)
-            @debug "Oppss, a função chamada não existe." "TRUE"
+            @logger "Oppss, a função chamada não existe." "TRUE"
             shift;;
         esac
     done
@@ -197,5 +197,5 @@ declare -a _FUNCTIONS_MAP && {
 }
 
 # FINALIZA O SCRIPT.
-@debug "Fim!" "TRUE"
+@logger "Fim!" "TRUE"
 trap @autoclean exit 0
