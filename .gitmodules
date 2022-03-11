@@ -3,4 +3,4 @@
 	url = https://github.com/jcmljunior/window-manager-i3
 [submodule "extras"]
 	path = extras
-	url = git@github.com:jcmljunior/dotfiles
+	url = https://github.com/jcmljunior/dotfiles
