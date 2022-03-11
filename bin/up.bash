@@ -5,10 +5,20 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
+function @start_function()
+{
+    @debug "Iniciando função: $1"
+}
+
+function @end_function()
+{
+    @debug "Encerrando função: $1" "$2"
+}
+
 # NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
 function @limbo
 {
-    @debug "Iniciando função: ${FUNCNAME[0]}"
+    @start_function "${FUNCNAME[0]}"
 
     declare -A _config
     declare -- _current
@@ -34,18 +44,18 @@ function @limbo
         echo "$str - ${_config[$str]}"
     done
 
-    @debug "Encerrando função: ${FUNCNAME[0]}" "TRUE"
+    @end_function "${FUNCNAME[0]}" "TRUE"
 }
 
 function @wm
 {
-    @debug "Iniciando função: ${FUNCNAME[0]}"
+    @start_function "${FUNCNAME[0]}"
     
     echo "Hello World!"
     echo "Hello World!"
     echo "Hello World!"
 
-    @debug "Encerrando função: ${FUNCNAME[0]}" "TRUE"
+    @end_function "${FUNCNAME[0]}" "TRUE"
 }
 
 # A FUNÇÃO "@debug" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
@@ -113,7 +123,7 @@ function @main
             @limbo; shift;;
 
         *)
-            echo "Oppss, a função chamada não existe."
+            @debug "Oppss, a função chamada não existe." "TRUE"
             shift;;
         esac
     done
