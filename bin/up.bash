@@ -5,6 +5,38 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
+# NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
+function @limbo
+{
+    @debug "Iniciando função: ${FUNCNAME[0]}"
+
+    declare -A _config
+    declare -- _current
+    declare -a _array && {
+        IFS=$'\n' read -r -d '' -a _array <<< "$_PROJECT_CONF"
+        for str in "${_array[@]}"; do
+            str=""
+
+            if [[ -z "${str##*]}" ]]; then
+                _current="${str:1:-1}"
+            elif [[ -n "${str##*]}" ]] ; then
+                _config[$_current]+="$(echo -n "$str ")" && {
+                    continue
+                }
+            else
+               @debug "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
+               return 1
+            fi
+        done
+    }
+
+    for str in "${!_config[@]}"; do
+        echo "$str - ${_config[$str]}"
+    done
+
+    @debug "Encerrando função: ${FUNCNAME[0]}" "TRUE"
+}
+
 function @wm
 {
     @debug "Iniciando função: ${FUNCNAME[0]}"
@@ -77,8 +109,11 @@ function @main
         "-wm" | "--window-manager")
             @wm; shift;;
 
+        "--limbo")
+            @limbo; shift;;
+
         *)
-            echo ""
+            echo "Oppss, a função chamada não existe."
             shift;;
         esac
     done
