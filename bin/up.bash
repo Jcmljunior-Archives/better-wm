@@ -5,11 +5,13 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
+# A FUNÇÃO "@start_function" APRESENTA A MENSAGEM DE LOG INICIAL DE TODAS AS FUNÇÕES.
 function @start_function()
 {
-    @debug "Iniciando função: $1"
+    @debug "Iniciando função: $1" [[ -z "$2" ]] && "$2"
 }
 
+# A FUNÇÃO "@end_function" APRESENTA A MENSAGEM DE LOG FINAL DE TODAS AS FUNÇÕES.
 function @end_function()
 {
     @debug "Encerrando função: $1" "$2"
