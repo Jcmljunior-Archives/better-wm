@@ -1,0 +1,3 @@
+[submodule "window-manager-i3"]
+	path = window-manager-i3
+	url = https://github.com/jcmljunior/window-manager-i3
