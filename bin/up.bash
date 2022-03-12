@@ -5,16 +5,25 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
-# A FUNÇÃO "@start_function" APRESENTA A MENSAGEM DE LOG INICIAL DE TODAS AS FUNÇÕES.
-function @start_function()
+function @function_exists()
 {
-    @logger "Iniciando função: $1" [[ -z "$2" ]] && "$2"
-}
+  declare -- _check_functions && {
+      _check_functions=$(declare -F)
+      _check_functions=$(echo "$_check_functions" |  awk '{gsub("declare -f ",""); print}')
+      mapfile -t _check_functions <<< "$_check_functions" && {
+          _check_functions=("${_check_functions[@]}")
+      }
+  }
 
-# A FUNÇÃO "@end_function" APRESENTA A MENSAGEM DE LOG FINAL DE TODAS AS FUNÇÕES.
-function @end_function()
-{
-    @logger "Encerrando função: $1" "$2"
+  for fnc in "${_check_functions[@]}"; do
+    [[ "$fnc" =~ .*"$1".* ]] && {
+      echo "TRUE"
+      return 1
+    }
+  done
+
+  echo "FALSE"
+  return 0
 }
 
 # NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
@@ -50,14 +59,8 @@ function @end_function()
 # }
 
 function @wm
-{
-    @start_function "${FUNCNAME[0]}"
-    
+{    
     echo "Hello World!"
-    echo "Hello World!"
-    echo "Hello World!"
-
-    @end_function "${FUNCNAME[0]}" "TRUE"
 }
 
 # A FUNÇÃO "@logger" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
@@ -113,24 +116,6 @@ function @autoclean ()
     exit "$_status_code"
 }
 
-# A FUNÇÃO "@main" INICIA OS COMPONENTES DE FORMA SELETIVA.
-function @main
-{    
-    while [[ "$*" ]]; do
-        case $1 in
-        "-wm" | "--window-manager")
-            @wm; shift;;
-
-        # "--limbo")
-        #     @limbo; shift;;
-
-        *)
-            @logger "Oppss, a função chamada não existe." "TRUE"
-            shift;;
-        esac
-    done
-}
-
 # A DECLARAÇÃO "_PROJECT_MODE" DEFINE O AMBIENTE DE PRODUÇÃO "PRODUCTION"
 # OU DE DESENVOLVIMENTO "DEVELOPER".
 declare -- _PROJECT_MODE && {
@@ -183,19 +168,24 @@ declare -- _PROJECT_LANG && {
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
 declare -a _FUNCTIONS_MAP && {
     _FUNCTIONS_MAP=(
-        "--window-manager"
+        "@wm"
     )
 }
 
 # INICIA COMPONENTES VIA PARAMETRO OU CARREGA A SEQUENCIA DE COMPONENTES
 # DEFINIDAS EM "_FUNCTIONS_MAP".
-[[ -n "$1" ]] && @main "$@"
-[[ -z "$1" ]] && {
-    for fnc in "${_FUNCTIONS_MAP[@]}"; do
-        @main "$fnc"
-    done
-}
+if [[ -z "$1" ]]; then
+  for fnc in "${_FUNCTIONS_MAP[@]}"; do
+    [[ "$(@function_exists "$fnc")" == "TRUE" ]] && {
+      eval "$fnc"
+    }
+  done
+elif [[ -n "$1" ]] && [[ "$(@function_exists "$1")" == "TRUE" ]]; then
+  eval "$1"
+else
+  @logger "Oppss, não foi possivel localizar a função solicitada."
+fi
 
 # FINALIZA O SCRIPT.
-@logger "Fim!" "TRUE"
+echo "Fim!"
 trap @autoclean exit 0
