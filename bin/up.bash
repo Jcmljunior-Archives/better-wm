@@ -5,15 +5,15 @@
 # AUTOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
-# A FUNÇÃO "" VERIFICA SE UMA FUNÇÃO FOI OU NÃO DEFINIDA.
+# A FUNÇÃO "function_exists" VERIFICA SE UMA FUNÇÃO FOI OU NÃO DEFINIDA.
 function @function_exists()
 {
   declare -- _check_functions && {
-      _check_functions=$(declare -F)
-      _check_functions=$(echo "$_check_functions" |  awk '{gsub("declare -f ",""); print}')
-      mapfile -t _check_functions <<< "$_check_functions" && {
-          _check_functions=("${_check_functions[@]}")
-      }
+    _check_functions=$(declare -F)
+    _check_functions=$(echo "$_check_functions" |  awk '{gsub("declare -f ",""); print}')
+    mapfile -t _check_functions <<< "$_check_functions" && {
+      _check_functions=("${_check_functions[@]}")
+    }
   }
 
   for fnc in "${_check_functions[@]}"; do
@@ -27,69 +27,75 @@ function @function_exists()
   return 0
 }
 
+# A FUNÇÃO "@lines_to_array" TRANSFORMA LINHAS EM ARRAY.
+function @lines_to_array()
+{
+  echo "..."
+}
+
 function @wm
 {    
-    echo "Hello World!"
+  @lines_to_array
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
 function @autoclean ()
 {
-    declare -- _status_code && {
-        _status_code="$?"
-    }
+  declare -- _status_code && {
+    _status_code="$?"
+  }
 
-    declare -a _unset_map && {
-        _unset_map=(
-            "_PROJECT_MODE"
-            "_PROJECT_PATH"
-            "_PROJECT_CONF"
-            "_FUNCTIONS_MAP"
-        )
-    }
+  declare -a _unset_map && {
+    _unset_map=(
+      "_PROJECT_MODE"
+      "_PROJECT_PATH"
+      "_PROJECT_CONF"
+      "_FUNCTIONS_MAP"
+    )
+  }
 
-    for str in "${_unset_map[@]}"; do
-        unset -n "$str"
-    done
+  for str in "${_unset_map[@]}"; do
+    unset -n "$str"
+  done
 
-    exit "$_status_code"
+  exit "$_status_code"
 }
 
 # A DECLARAÇÃO "_PROJECT_MODE" DEFINE O AMBIENTE DE PRODUÇÃO "PRODUCTION"
 # OU DE DESENVOLVIMENTO "DEVELOPER".
 declare -- _PROJECT_MODE && {
-    _PROJECT_MODE="DEVELOPER"
+  _PROJECT_MODE="DEVELOPER"
 }
 
 # A DECLARAÇÃO "_PROJECT_PATH" DEFINE O CAMINHO ABSOLUTO DO PROJETO.
 declare -- _PROJECT_PATH && {
-    _PROJECT_PATH="/home/USER"
-    _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
+  _PROJECT_PATH="/home/USER"
+  _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
 
-    [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
-        _PROJECT_PATH+="/Git"
-    }
+  [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
+    _PROJECT_PATH+="/Git"
+  }
 
-    [[ "$_PROJECT_MODE" == "PRODUCTION" ]] && {
-        _PROJECT_PATH+="/.config"
-    }
+  [[ "$_PROJECT_MODE" == "PRODUCTION" ]] && {
+    _PROJECT_PATH+="/.config"
+  }
 
-    _PROJECT_PATH+="/better-wm"
+  _PROJECT_PATH+="/better-wm"
 }
 
 # A DECLARAÇÃO "_PROJECT_CONF" DEFINE O COMPORTAMENTO DOS COMPONENTES.
 declare -- _PROJECT_CONF && {
-    [[ -f "$_PROJECT_PATH/config.conf" ]] && {
-        _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
-    }
+  [[ -f "$_PROJECT_PATH/config.conf" ]] && {
+    _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
+  }
 }
 
 # A DECLARAÇÃO "_FUNCTIONS_MAP" DEFINE A ORDEM DE EXECUÇÃO DOS COMPONENTES
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
 declare -a _FUNCTIONS_MAP && {
-    _FUNCTIONS_MAP=(
-        "@wm"
-    )
+  _FUNCTIONS_MAP=(
+    "@wm"
+  )
 }
 
 # INICIA COMPONENTES VIA PARAMETRO OU CARREGA A SEQUENCIA DE COMPONENTES
