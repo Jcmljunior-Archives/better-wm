@@ -5,6 +5,7 @@
 # AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
+# A FUNÇÃO "" VERIFICA SE UMA FUNÇÃO FOI OU NÃO DEFINIDA.
 function @function_exists()
 {
   declare -- _check_functions && {
@@ -63,33 +64,6 @@ function @wm
     echo "Hello World!"
 }
 
-# A FUNÇÃO "@logger" VERIFICA SE DEVE OU NÃO EXIBIR LOGS.
-function @logger ()
-{
-    declare -- _length && {
-        _length="${#1}"
-    }
-
-    declare -- _stroke && {
-        for (( i=1; i<="$_length"; i++ )); do
-            _stroke+="-"
-        done
-    }
-
-    [[ -n "$2" ]] && {
-        printf "\n"
-    }
-
-    [[ "$_PROJECT_DEBUG" == "TRUE" ]] || [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
-        printf "%s \n" "$_stroke"
-        printf "%s \n" "$1"
-        printf "%s \n" "$_stroke"
-        return 0
-    }
-
-    return 1
-}
-
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
 function @autoclean ()
 {
@@ -100,11 +74,8 @@ function @autoclean ()
     declare -a _unset_map && {
         _unset_map=(
             "_PROJECT_MODE"
-            "_PROJECT_DEBUG"
-            "_PROJECT_DIR"
             "_PROJECT_PATH"
             "_PROJECT_CONF"
-            "_PROJECT_LANG"
             "_FUNCTIONS_MAP"
         )
     }
@@ -122,16 +93,6 @@ declare -- _PROJECT_MODE && {
     _PROJECT_MODE="DEVELOPER"
 }
 
-# A DECLARAÇÃO "_PROJECT_DEBUG" DEFINE A DEPURAÇÃO DOS COMPONENTES.
-declare -- _PROJECT_DEBUG && {
-    _PROJECT_DEBUG="FALSE"
-}
-
-# A DECLARAÇÃO "_PROJECT_DIR" DEFINE O DIRETÓRIO PADRÃO DO PROJETO.
-declare -- _PROJECT_DIR && {
-    _PROJECT_DIR="better-wm"
-}
-
 # A DECLARAÇÃO "_PROJECT_PATH" DEFINE O CAMINHO ABSOLUTO DO PROJETO.
 declare -- _PROJECT_PATH && {
     _PROJECT_PATH="/home/USER"
@@ -145,22 +106,13 @@ declare -- _PROJECT_PATH && {
         _PROJECT_PATH+="/.config"
     }
 
-    _PROJECT_PATH+="/$_PROJECT_DIR"
+    _PROJECT_PATH+="/better-wm"
 }
 
 # A DECLARAÇÃO "_PROJECT_CONF" DEFINE O COMPORTAMENTO DOS COMPONENTES.
 declare -- _PROJECT_CONF && {
     [[ -f "$_PROJECT_PATH/config.conf" ]] && {
         _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
-    }
-}
-
-# A DECLARAÇÃO "_PROJECT_LANG" DEFINE O IDIOMA PARA A EXIBIÇÃO DE LOGS.
-declare -- _PROJECT_LANG && {
-    [[ -f "/etc/locale.conf" ]] && {
-        _PROJECT_LANG=$(cat "/etc/locale.conf")
-        _PROJECT_LANG="${_PROJECT_LANG##*=}"
-        _PROJECT_LANG=$(echo -n "$_PROJECT_LANG" | awk -F "." '/./ { print $1 }')
     }
 }
 
@@ -183,7 +135,7 @@ if [[ -z "$1" ]]; then
 elif [[ -n "$1" ]] && [[ "$(@function_exists "$1")" == "TRUE" ]]; then
   eval "$1"
 else
-  @logger "Oppss, não foi possivel localizar a função solicitada."
+  echo "Oppss, não foi possivel localizar a função solicitada."
 fi
 
 # FINALIZA O SCRIPT.
