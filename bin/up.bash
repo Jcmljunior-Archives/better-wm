@@ -2,7 +2,7 @@
 
 # CONFIGURAÇÕES BÁSICAS PARA A INICIALIZAÇÃO DE UM GERENCIADOR DE JANELAS.
 # PROJETO: (https://github.com/jcmljunior/better-wm)
-# AUTHOR: JULIO CESAR <jcmljunior@gmail.com>
+# AUTOR: JULIO CESAR <jcmljunior@gmail.com>
 # VERSÃO: 1.0.0
 
 # A FUNÇÃO "" VERIFICA SE UMA FUNÇÃO FOI OU NÃO DEFINIDA.
@@ -27,41 +27,11 @@ function @function_exists()
   return 0
 }
 
-# NECESSITA DE REFORMULAÇÃO NAS REGRAS IFS.
-# function @limbo
-# {
-#     @start_function "${FUNCNAME[0]}"
-
-#     declare -A _config
-#     declare -- _current
-#     declare -a _array && {
-#         IFS=$'\n' read -r -d '' -a _array <<< "$_PROJECT_CONF"
-#         for str in "${_array[@]}"; do
-#             str=""
-
-#             if [[ -z "${str##*]}" ]]; then
-#                 _current="${str:1:-1}"
-#             elif [[ -n "${str##*]}" ]] ; then
-#                 _config[$_current]+="$(echo -n "$str ")" && {
-#                     continue
-#                 }
-#             else
-#                @logger "Oppss, o identificador chave no array precisa de conter os seguintes caracteres. [...]"
-#                return 1
-#             fi
-#         done
-#     }
-
-#     for str in "${!_config[@]}"; do
-#         echo "$str - ${_config[$str]}"
-#     done
-
-#     @end_function "${FUNCNAME[0]}" "TRUE"
-# }
-
 function @wm
 {    
     echo "Hello World!"
+
+    @file_get_contents "$_PROJECT_PATH/config.conf"
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
