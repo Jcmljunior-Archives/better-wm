@@ -30,8 +30,6 @@ function @function_exists()
 function @wm
 {    
     echo "Hello World!"
-
-    @file_get_contents "$_PROJECT_PATH/config.conf"
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
