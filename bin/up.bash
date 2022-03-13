@@ -17,7 +17,7 @@ function @function_exists()
   }
 
   for fnc in "${_check_functions[@]}"; do
-    [[ "$fnc" =~ .*"$1".* ]] && {
+    [[ "$fnc" = "$1" ]] && {
       echo "TRUE"
       return 1
     }
@@ -27,15 +27,9 @@ function @function_exists()
   return 0
 }
 
-# A FUNÇÃO "@lines_to_array" TRANSFORMA LINHAS EM ARRAY.
-function @lines_to_array()
-{
-  echo "..."
-}
-
 function @wm
-{    
-  @lines_to_array
+{
+  echo "Hello World!"
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
@@ -113,5 +107,7 @@ else
 fi
 
 # FINALIZA O SCRIPT.
+echo ""
 echo "Fim!"
+
 trap @autoclean exit 0
