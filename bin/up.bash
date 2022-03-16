@@ -72,11 +72,29 @@ function @config_keyboard()
 
   [[ ! -x "$(command -v setxkbmap)" ]] && {
     echo "Oppss, não foi possível encontrar setxkbmap."
-    exit 1
+    return 1
   }
   
-  setxkbmap "$_output" &
+  setxkbmap $(echo -n "$_output")
+  return 0
+}
 
+function @config_touchpad()
+{
+  declare -- _touchpad_enabled && {
+    _touchpad_enabled=$(echo -n "$_PROJECT_CONF" | grep -E "TOUCHPAD_ENABLED")
+    _touchpad_enabled="${_touchpad_enabled##*=}"
+  }
+
+  [ "$_touchpad_enabled" != "TRUE" ] && exit 0
+
+  [[ ! -x "$(command -v xinput)" ]] && {
+    echo "Oppss, não foi possível encontrar xinput."
+    return 1
+  }
+
+  xinput set-prop 'SynPS/2 Synaptics TouchPad' 'libinput Tapping Enabled' 1
+  return 0
 }
 
 function @wm
@@ -93,9 +111,12 @@ function @wm
   }
 
  
-  [[ -x "$(command -v "$_window_manager_session")" ]] && {
-    exec $(""$_window_manager_session $_window_manager_options"")
+  [[ ! -x "$(command -v "$_window_manager_session")" ]] && {
+    echo "Oppss, não foi possível encontrar "$_window_manager_session"."
+    exit 1
   }
+  
+  exec $(""$_window_manager_session $_window_manager_options"")
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
@@ -155,6 +176,7 @@ declare -- _PROJECT_CONF && {
 declare -a _FUNCTIONS_MAP && {
   _FUNCTIONS_MAP=(
     "@config_keyboard"
+    "@config_touchpad"
     "@wm"
   )
 }
