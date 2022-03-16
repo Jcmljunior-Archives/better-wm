@@ -160,7 +160,7 @@ function @autostart()
 
       [ -z "$_read_desktop_entry" ] && continue
 
-      exec $(echo -n "$_read_desktop_entry") &>/dev/null  &
+      exec $(echo -n "$_read_desktop_entry") &   
     done
   }
 
