@@ -95,49 +95,8 @@ declare -- _PROJECT_PATH && {
 declare -- _PROJECT_CONF && {
   [[ -f "$_PROJECT_PATH/config.conf" ]] && {
     _PROJECT_CONF=$(cat < "$_PROJECT_PATH/config.conf")
-    # _PROJECT_CONF=$(cat < "$_PROJECT_PATH/config.conf" | xargs echo)
-    # _PROJECT_CONF=$(echo "$_PROJECT_CONF" | awk -F '[*]' '{ gsub(/\[/, "\n["); print }')
-    # _PROJECT_CONF=$(echo "$_PROJECT_CONF" | sed -e '/^$/d') && {
-      # mapfile -t _PROJECT_CONF_MAP <<< "$_PROJECT_CONF"
-    # }
   }
 }
-
-# declare -a _PROJECT_CONF_MAP && {
-#   [[ -n "$_PROJECT_CONF" ]] && {
-#     mapfile -t _PROJECT_CONF_MAP <<< "$_PROJECT_CONF" && {
-#     declare -- _pos
-#     declare -A _arr
-
-#     for ((i = 0; i < ${#_PROJECT_CONF_MAP[@]}; i++)); do
-
-#     declare -- _arr_map && {
-#       IFS=$'\n' read -r -a _arr_map <<< "${_PROJECT_CONF_MAP[$i]}"
-#       for str in "${_arr_map[@]}"; do
-
-#         [[ -z "${str##*]}" ]] && {
-#           _pos="${str:1:-1}"
-#           continue
-#         }
-
-#         _arr["$_pos"]+="$str "
-
-#       done
-#     }
-
-#     done
-
-#     # _PROJECT_CONF_MAP2=(${_arr[@]})
-
-#     for str in "${_arr[@]}"; do
-#       echo "$str -"
-#     done
-
-#     }
-#   }
-# }
-
-# declare -A _PROJECT_CONF_MAP2
 
 # A DECLARAÇÃO "_FUNCTIONS_MAP" DEFINE A ORDEM DE EXECUÇÃO DOS COMPONENTES
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
