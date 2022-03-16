@@ -34,7 +34,7 @@ function @config_keyboard()
     _keyboard_enabled="${_keyboard_enabled##*=}"
   }
 
-  [ "$_keyboard_enabled" != "TRUE" ] && exit 0
+  [ "$_keyboard_enabled" != "TRUE" ] && return 0
 
   declare -- _output
 
@@ -86,7 +86,7 @@ function @config_touchpad()
     _touchpad_enabled="${_touchpad_enabled##*=}"
   }
 
-  [ "$_touchpad_enabled" != "TRUE" ] && exit 0
+  [ "$_touchpad_enabled" != "TRUE" ] && return 0
 
   [[ ! -x "$(command -v xinput)" ]] && {
     echo "Oppss, não foi possível encontrar xinput."
@@ -117,6 +117,54 @@ function @wm
   }
   
   exec $(""$_window_manager_session $_window_manager_options"")
+}
+
+function @autostart()
+{
+  declare -- _autostart_enabled && {
+    _autostart_enabled=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_ENABLED")
+    _autostart_enabled="${_autostart_enabled##*=}"
+  }
+
+  [ "$_autostart_enabled" != "TRUE" ] && return 0
+  
+  declare -- _autostart_await && {
+    _autostart_await=$(echo -n "$_PROJECT_CONF" | grep -E "AUTOSTART_AWAIT")
+    _autostart_await="${_autostart_await##*=}"
+  }
+
+  [[ ! "$_autostart_await" =~ ^-?[0-9]+$ ]] && {
+    echo "Oppss, o tempo de inicialização precisa ser um valor inteiro."
+    return 1
+  }
+
+  [ ! -d "$_PROJECT_PATH/autostart" ] && \
+    mkdir "$_PROJECT_PATH/autostart"
+  
+  sleep "$_autostart_await" &>/dev/null && {
+    declare -- _autostart_apps && {
+      _autostart_apps=$(find "$_PROJECT_PATH/autostart" -type f)
+      mapfile -t _autostart_apps <<< "$_autostart_apps"
+    }
+
+    for str in "${_autostart_apps[@]}"; do
+
+      [ ! -f "$str" ] || \
+      [[ ! "$str" =~ .*".desktop"*. ]] && \
+        continue
+
+      declare -- _read_desktop_entry && {
+        _read_desktop_entry=$(cat "$str" | grep -E "Exec=*")
+        _read_desktop_entry="${_read_desktop_entry##*Exec=}"
+      }
+
+      [ -z "$_read_desktop_entry" ] && continue
+
+      exec $(echo -n "$_read_desktop_entry") &>/dev/null  &
+    done
+  }
+
+  return 0
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
