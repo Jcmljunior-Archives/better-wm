@@ -29,7 +29,21 @@ function @function_exists()
 
 function @wm
 {
-  echo "Hello World!"
+  declare -- _window_manager_session && {
+    _window_manager_session=$(echo -n "$_PROJECT_CONF" | grep -E "WINDOW_MANAGER_SESSION")
+    _window_manager_session="${_window_manager_session##*=}"
+  }
+
+  declare -- _window_manager_options && {
+    _window_manager_options=$(echo -n "$_PROJECT_CONF" | grep -E "WINDOW_MANAGER_OPTIONS")
+    _window_manager_options="${_window_manager_options##*=}"
+    _window_manager_options="${_window_manager_options/BASE_DIR/$_PROJECT_PATH}"
+  }
+
+ 
+  [[ -x "$(command -v "$_window_manager_session")" ]] && {
+    exec $(""$_window_manager_session $_window_manager_options"")
+  }
 }
 
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
@@ -66,11 +80,11 @@ declare -- _PROJECT_PATH && {
   _PROJECT_PATH="/home/USER"
   _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
 
-  [[ "$_PROJECT_MODE" == "DEVELOPER" ]] && {
-    _PROJECT_PATH+="/Git"
+  [[ "$_PROJECT_MODE" = "DEVELOPER" ]] && {
+    _PROJECT_PATH+="/Git/jcmljunior"
   }
 
-  [[ "$_PROJECT_MODE" == "PRODUCTION" ]] && {
+  [[ "$_PROJECT_MODE" = "PRODUCTION" ]] && {
     _PROJECT_PATH+="/.config"
   }
 
@@ -80,9 +94,50 @@ declare -- _PROJECT_PATH && {
 # A DECLARAÇÃO "_PROJECT_CONF" DEFINE O COMPORTAMENTO DOS COMPONENTES.
 declare -- _PROJECT_CONF && {
   [[ -f "$_PROJECT_PATH/config.conf" ]] && {
-    _PROJECT_CONF=$(cat "$_PROJECT_PATH/config.conf")
+    _PROJECT_CONF=$(cat < "$_PROJECT_PATH/config.conf")
+    # _PROJECT_CONF=$(cat < "$_PROJECT_PATH/config.conf" | xargs echo)
+    # _PROJECT_CONF=$(echo "$_PROJECT_CONF" | awk -F '[*]' '{ gsub(/\[/, "\n["); print }')
+    # _PROJECT_CONF=$(echo "$_PROJECT_CONF" | sed -e '/^$/d') && {
+      # mapfile -t _PROJECT_CONF_MAP <<< "$_PROJECT_CONF"
+    # }
   }
 }
+
+# declare -a _PROJECT_CONF_MAP && {
+#   [[ -n "$_PROJECT_CONF" ]] && {
+#     mapfile -t _PROJECT_CONF_MAP <<< "$_PROJECT_CONF" && {
+#     declare -- _pos
+#     declare -A _arr
+
+#     for ((i = 0; i < ${#_PROJECT_CONF_MAP[@]}; i++)); do
+
+#     declare -- _arr_map && {
+#       IFS=$'\n' read -r -a _arr_map <<< "${_PROJECT_CONF_MAP[$i]}"
+#       for str in "${_arr_map[@]}"; do
+
+#         [[ -z "${str##*]}" ]] && {
+#           _pos="${str:1:-1}"
+#           continue
+#         }
+
+#         _arr["$_pos"]+="$str "
+
+#       done
+#     }
+
+#     done
+
+#     # _PROJECT_CONF_MAP2=(${_arr[@]})
+
+#     for str in "${_arr[@]}"; do
+#       echo "$str -"
+#     done
+
+#     }
+#   }
+# }
+
+# declare -A _PROJECT_CONF_MAP2
 
 # A DECLARAÇÃO "_FUNCTIONS_MAP" DEFINE A ORDEM DE EXECUÇÃO DOS COMPONENTES
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
@@ -96,11 +151,11 @@ declare -a _FUNCTIONS_MAP && {
 # DEFINIDAS EM "_FUNCTIONS_MAP".
 if [[ -z "$1" ]]; then
   for fnc in "${_FUNCTIONS_MAP[@]}"; do
-    [[ "$(@function_exists "$fnc")" == "TRUE" ]] && {
+    [[ "$(@function_exists "$fnc")" = "TRUE" ]] && {
       eval "$fnc"
     }
   done
-elif [[ -n "$1" ]] && [[ "$(@function_exists "$1")" == "TRUE" ]]; then
+elif [[ -n "$1" ]] && [[ "$(@function_exists "$1")" = "TRUE" ]]; then
   eval "$1"
 else
   echo "Oppss, não foi possivel localizar a função solicitada."
