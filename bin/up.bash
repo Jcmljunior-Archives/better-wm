@@ -17,7 +17,7 @@ function @function_exists()
   }
 
   for fnc in "${_check_functions[@]}"; do
-    [[ "$fnc" = "$1" ]] && {
+    [ "$fnc" = "$1" ] && {
       echo "TRUE"
       return 1
     }
@@ -25,6 +25,58 @@ function @function_exists()
 
   echo "FALSE"
   return 0
+}
+
+function @config_keyboard()
+{
+  declare -- _keyboard_enabled && {
+    _keyboard_enabled=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_ENABLED")
+    _keyboard_enabled="${_keyboard_enabled##*=}"
+  }
+
+  [ "$_keyboard_enabled" != "TRUE" ] && exit 0
+
+  declare -- _output
+
+  declare -- _keyboard_model && {
+    _keyboard_model=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_MODEL")
+    _keyboard_model="${_keyboard_model##*=}"
+  }
+
+  declare -- _keyboard_layout && {
+  _keyboard_layout=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_LAYOUT")
+    _keyboard_layout="${_keyboard_layout##*=}"
+  }
+  
+  declare -- _keyboard_variant && {
+    _keyboard_variant=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_VARIANT")
+    _keyboard_variant="${_keyboard_variant##*=}"
+  }
+
+  declare -- _keyboard_options && {
+    _keyboard_options=$(echo -n "$_PROJECT_CONF" | grep -E "KEYBOARD_OPTIONS")
+    _keyboard_options="${_keyboard_options##*=}"
+  }
+
+  [ -n "$_keyboard_model" ] && \
+    _output+="-model ${_keyboard_model} "
+
+  [ -n "$_keyboard_layout" ] && \
+    _output+="-layout ${_keyboard_layout} "
+
+  [ -n "$_keyboard_variant" ] && \
+    _output+="-variant ${_keyboard_variant} "
+
+  [ -n "$_keyboard_options" ] && \
+    _output+="-options ${_keyboard_options}"
+
+  [[ ! -x "$(command -v setxkbmap)" ]] && {
+    echo "Oppss, não foi possível encontrar setxkbmap."
+    exit 1
+  }
+  
+  setxkbmap "$_output" &
+
 }
 
 function @wm
@@ -102,6 +154,7 @@ declare -- _PROJECT_CONF && {
 # NA AUSENCIA DE UM PARAMETRO DE INICIALIZAÇÃO.
 declare -a _FUNCTIONS_MAP && {
   _FUNCTIONS_MAP=(
+    "@config_keyboard"
     "@wm"
   )
 }
