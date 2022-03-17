@@ -107,7 +107,9 @@ function @wm
   declare -- _window_manager_options && {
     _window_manager_options=$(echo -n "$_PROJECT_CONF" | grep -E "WINDOW_MANAGER_OPTIONS")
     _window_manager_options="${_window_manager_options##*=}"
-    _window_manager_options="${_window_manager_options/BASE_DIR/$_PROJECT_PATH}"
+    [ -n "$_window_manager_options" ] && {
+      _window_manager_options="${_window_manager_options/BASE_DIR/$_PROJECT_PATH}"
+    }
   }
 
  
@@ -116,7 +118,7 @@ function @wm
     exit 1
   }
   
-  exec $(""$_window_manager_session $_window_manager_options"")
+  exec $(echo ""$_window_manager_session" "$_window_manager_options"")
 }
 
 function @autostart()
@@ -176,7 +178,6 @@ function @autoclean ()
 
   declare -a _unset_map && {
     _unset_map=(
-      "_PROJECT_MODE"
       "_PROJECT_PATH"
       "_PROJECT_CONF"
       "_FUNCTIONS_MAP"
@@ -190,32 +191,16 @@ function @autoclean ()
   exit "$_status_code"
 }
 
-# A DECLARAÇÃO "_PROJECT_MODE" DEFINE O AMBIENTE DE PRODUÇÃO "PRODUCTION"
-# OU DE DESENVOLVIMENTO "DEVELOPER".
-declare -- _PROJECT_MODE && {
-  _PROJECT_MODE="DEVELOPER"
-}
-
 # A DECLARAÇÃO "_PROJECT_PATH" DEFINE O CAMINHO ABSOLUTO DO PROJETO.
 declare -- _PROJECT_PATH && {
   _PROJECT_PATH="/home/USER"
-  _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}"
-
-  [[ "$_PROJECT_MODE" = "DEVELOPER" ]] && {
-    _PROJECT_PATH+="/Git/jcmljunior"
-  }
-
-  [[ "$_PROJECT_MODE" = "PRODUCTION" ]] && {
-    _PROJECT_PATH+="/.config"
-  }
-
-  _PROJECT_PATH+="/better-wm"
+  _PROJECT_PATH="${_PROJECT_PATH/USER/$USER}/.config/better-wm"
 }
 
 # A DECLARAÇÃO "_PROJECT_CONF" DEFINE O COMPORTAMENTO DOS COMPONENTES.
 declare -- _PROJECT_CONF && {
-  [[ -f "$_PROJECT_PATH/config.conf" ]] && {
-    _PROJECT_CONF=$(cat < "$_PROJECT_PATH/config.conf")
+  [[ -f "$_PROJECT_PATH/i3/config.conf" ]] && {
+    _PROJECT_CONF=$(cat < "$_PROJECT_PATH/i3/config.conf")
   }
 }
 
