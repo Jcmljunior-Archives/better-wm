@@ -27,6 +27,7 @@ function @function_exists()
   return 0
 }
 
+# A FUNÇÃO "@config_keyboard" DEFINE AJUSTES AO COMPONENTE TECLADO.
 function @config_keyboard()
 {
   declare -- _keyboard_enabled && {
@@ -79,6 +80,7 @@ function @config_keyboard()
   return 0
 }
 
+# A FUNÇÃO "@config_touchpad" DEFINE AJUSTES AO COMPONENTE TOUCHPAD.
 function @config_touchpad()
 {
   declare -- _touchpad_enabled && {
@@ -97,6 +99,7 @@ function @config_touchpad()
   return 0
 }
 
+# A FUNÇÃO "@wm" INICIALIZA O GERENCIADOR DE JANELAS.
 function @wm
 {
   declare -- _window_manager_session && {
@@ -121,6 +124,7 @@ function @wm
   exec $(echo ""$_window_manager_session" "$_window_manager_options"")
 }
 
+# A FUNÇÃO "@autostart" INICIALIZA APLICAÇÕES DEFINIDAS EM AUTOSTART.
 function @autostart()
 {
   declare -- _autostart_enabled && {
@@ -169,6 +173,26 @@ function @autostart()
   return 0
 }
 
+# A FUNÇÃO "@wallpaper" DEFINE AJUSTES AO COMPONENTE DE PLANO DE FUNDO.
+function @wallpaper()
+{
+  declare -- _wallpaper_enabled && {
+    _wallpaper_enabled=$(echo "$_PROJECT_CONF" | grep -E "WALLPAPER_ENABLED=*")
+    _wallpaper_enabled="${_wallpaper_enabled##*=}"
+  }
+
+  [ "$_wallpaper_enabled" != "TRUE" ] && return 0
+
+  [[ ! -x "$(command -v feh)" ]] && {
+    echo "Oppss, não foi possível encontrar feh."
+    return 1
+  }
+  
+  exec feh --conversion-timeout 1 --bg-fill ~/.config/better-wm/background/01.png & 
+
+  return 0
+}
+
 # A FUNÇÃO "@autoclean" ELIMINA TODA A BAGUNÇA FEITA PELO SCRIPT.
 function @autoclean ()
 {
@@ -210,6 +234,7 @@ declare -a _FUNCTIONS_MAP && {
   _FUNCTIONS_MAP=(
     "@config_keyboard"
     "@config_touchpad"
+    "@wallpaper"
     "@wm"
   )
 }
