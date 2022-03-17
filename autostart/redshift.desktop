@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Redshift - set color temperature of display according to time of day
+Comment=redshift adjusts  the  color temperature of your screen according to your surroundings.
+Exec=redshift -c .config/redshift/default.conf
+Type=Application
