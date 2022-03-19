@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Flameshot
+Comment=
+Exec=flatpak run org.flameshot.Flameshot
+Type=Application
