@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Picom
+Comment=
+Exec=/usr/bin/picom
+Type=Application
